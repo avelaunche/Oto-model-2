@@ -47,5 +47,4 @@ def print_infected_fish(fishpop):
     for c in x:
       if c.oto_infection == 1:
         number_of_infected += 1
-  print(number_of_infected)
   return number_of_infected
