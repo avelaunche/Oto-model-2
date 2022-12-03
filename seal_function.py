@@ -74,24 +74,17 @@ def print_infected_seal(sealpop):
 
   return number_of_infected
 
-def print_seal_antibodies(sealpop):
+def print_infected_young_seals(sealpop, young_param):
   number_of_infected = 0
   for x in sealpop:
-    if x.antibodies > 0:
+    if x.oto_infection == 1 and x.age < young_param[1] and x.age > young_param[0]:
       number_of_infected += 1
   return number_of_infected
 
-def print_infected_young_seals(sealpop):
+def print_infected_old_seals(sealpop, old_param):
   number_of_infected = 0
   for x in sealpop:
-    if x.oto_infection == 1 and x.age < 3:
-      number_of_infected += 1
-  return number_of_infected
-
-def print_infected_old_seals(sealpop):
-  number_of_infected = 0
-  for x in sealpop:
-    if x.oto_infection == 1 and x.age > 7:
+    if x.oto_infection == 1 and x.age > old_param[0] and x.age < old_param[1]:
       number_of_infected += 1
   return number_of_infected
 
@@ -115,3 +108,11 @@ def decrease_antibody(seal,immunity_decrease_amounts):
   if seal.antibodies > 0:
     seal.antibodies -= immunity_decrease_amounts
   return seal
+
+#this returns a variable for number of seals with antibodies in the age_param range, including partials
+def print_antibody_seals(seal_pop, age_param):
+  antibody_count = 0
+  for x in seal_pop:
+    if x.age < age_param[1] and x.age > age_param[0] and x.antibodies > 0:
+      antibody_count += 1
+  return antibody_count
