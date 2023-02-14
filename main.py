@@ -180,9 +180,7 @@ if combined_model == True:
 
   #combined model
   for x in range(0,len_mod):
-    print(x)
     #this for loop is meant to make every instance undergo the code they need to
-    print(len(harbour_seal_pop) == len(elephant_seals_pop))
     for m in range(0,len(harbour_seal_pop)-1):
       #this gets the seal to eat 10 fish and catch oto if they have to
       seal_function.hunt(elephant_seals_pop[m], fishpop, elephant_seals_infection_type,elephant_infection_odds_basic,elephant_infection_odds_old,elephant_infection_odds_young)
