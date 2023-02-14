@@ -7,7 +7,7 @@ import pandas as pd
 seal_pop_number = 100
 fish_pop_number = seal_pop_number * 100
 
-#parameters for the cycles 
+#parameters for the disease 
 #antibodies parameters ('initial' or 'cumulative')
 elephant_seals_antibodies = 'initial'
 #amount of immunity that is added (put 0 if it's not applicable)
@@ -15,7 +15,7 @@ elephant_seals_cumulative = 0
 #basic(non age based) or nonbasic infected
 elephant_seals_infection_type = 'basic'
 #benchmark for elephant seals infection odds
-elephant_infection_odds_basic = 0.01
+elephant_infection_odds_basic = 0.1
 #infection rate for older seals
 elephant_infection_odds_old = 0.5
 #infection rate for younger seals
@@ -24,22 +24,16 @@ elephant_infection_odds_young = 0.5
 elephant_seal_immunity_decrease = 0
 #the amount of immunity the seal starts with
 elephant_seal_initial_immunity = 1
-#age gap of young seals
-young_param = [0, 3]
-#age gap of old seals
-old_param = [8, 10]
-#length of model
-len_mod = 100
 
-#parameters for the cycles 
+#parameters for the disease 
 #antibodies parameters ('initial' or 'cumulative')
 harbour_seals_antibodies = 'initial'
 #amount of immunity that is added (put 0 if it's not applicable)
-harbour_seals_cumulative = 0.33
+harbour_seals_cumulative = 0
 #basic(non age based) or nonbasic infected
 harbour_seals_infection_type = 'basic'
 #benchmark for elephant seals infection odds
-harbour_infection_odds_basic = 0.25
+harbour_infection_odds_basic = 0.1
 #infection rate for older seals
 harbour_infection_odds_old = 0.5
 #infection rate for younger seals
@@ -49,16 +43,26 @@ harbour_seal_immunity_decrease = 0
 #the amount of immunity the seal starts with
 harbour_seal_initial_immunity = 1
 
+#age gap of young seals
+young_param = [0, 3]
+#age gap of old seals
+old_param = [8, 10]
+
+#length of model
+len_mod = 100
+
 # which models you want to run
-elephant_seal_model = True
-harbour_seal_model = True
+elephant_seal_model = False
+harbour_seal_model = False
 combined_model = True
 
 #what info you want to print/graph
-infected_seals = False
+infected_seals = True
 infected_younger_seals = False
 infected_older_seals = False
 
+#insert csv path here
+csv_path = ""
 
 #lists to graph with
 infected_elephant_seals = []
@@ -90,8 +94,6 @@ younger_antibodies_harbour_seals_comb_mod = []
 older_antibodies_harbour_seals_comb_mod = []
 combined_model_fish = []
 
-#insert csv path here
-csv_path = ""
 
 
 if elephant_seal_model == True:
@@ -112,16 +114,10 @@ if elephant_seal_model == True:
     #prints necessary information and stores important 
     hi = seal_function.print_infected_seal(elephant_seals_pop)
     infected_elephant_seals.append(hi)
-    if infected_seals == True:
-      print(hi)
     hi = seal_function.print_infected_young_seals(elephant_seals_pop, young_param)
     infected_younger_elephant_seals.append(hi)
-    if infected_younger_seals == True:
-      print(hi)
     hi = seal_function.print_infected_old_seals(elephant_seals_pop, old_param)
     infected_older_elephant_seals.append(hi)
-    if infected_older_seals == True:
-      print(hi)
     antibodies = seal_function.print_antibody_seals(elephant_seals_pop, [0,11])
     total_antibodies_elephant_seals.append(antibodies)
     antibodies = seal_function.print_antibody_seals(elephant_seals_pop, young_param)
@@ -130,7 +126,6 @@ if elephant_seal_model == True:
     older_antibodies_elephant_seals.append(antibodies)
 
     elephant_seals_fish.append(fish.print_infected_fish(fishpop))
-    print()
       #this code provides maintenance on the infection status
     seal_function.increase_oto_length(elephant_seals_pop,elephant_seals_antibodies,elephant_seals_cumulative,elephant_seal_immunity_decrease,elephant_seal_initial_immunity)
         
@@ -139,15 +134,12 @@ if elephant_seal_model == True:
     fish.regenerate_fishpop(fishpop,fish_pop_number)
     seal_function.replace_seal_pop(elephant_seals_pop,seal_pop_number)
 
-
-
 if harbour_seal_model == True:
   #this generates a fish population and a new seal population for a fresh start
   fishpop = fish.generate_fish(fish_pop_number)
   harbour_seal_pop = seal_function.seals_generate(seal_pop_number)
   
   for x in range(0, len_mod):
-    print(str(x + 1) + 'th year')
     # this makes the seals hunt, poop, and adds age
     for m in harbour_seal_pop:
       seal_function.hunt(m, fishpop, harbour_seals_infection_type,harbour_infection_odds_basic,harbour_infection_odds_old,harbour_infection_odds_young)
@@ -172,14 +164,6 @@ if harbour_seal_model == True:
     older_antibodies_harbour_seals.append(antibodies)
 
     harbour_seals_fish.append(fish.print_infected_fish(fishpop))
-    
-    if infected_seals == True:
-      print(hi)
-    if infected_younger_seals == True:
-      print(hit)
-    if infected_older_seals == True:
-      print(hil)
-    print()
         
       #this provides maintenance on infection status
     seal_function.increase_oto_length(harbour_seal_pop,harbour_seals_antibodies,harbour_seals_cumulative,harbour_seal_immunity_decrease,harbour_seal_initial_immunity)
@@ -188,10 +172,6 @@ if harbour_seal_model == True:
     fish.other_causes(fishpop)
     fish.regenerate_fishpop(fishpop,fish_pop_number)
     seal_function.replace_seal_pop(harbour_seal_pop, seal_pop_number)
-  
-  
-
-
 
 if combined_model == True:
   harbour_seal_pop = seal_function.seals_generate(seal_pop_number)
@@ -200,14 +180,16 @@ if combined_model == True:
 
   #combined model
   for x in range(0,len_mod):
+    print(x)
     #this for loop is meant to make every instance undergo the code they need to
+    print(len(harbour_seal_pop) == len(elephant_seals_pop))
     for m in range(0,len(harbour_seal_pop)-1):
       #this gets the seal to eat 10 fish and catch oto if they have to
       seal_function.hunt(elephant_seals_pop[m], fishpop, elephant_seals_infection_type,elephant_infection_odds_basic,elephant_infection_odds_old,elephant_infection_odds_young)
       seal_function.hunt(harbour_seal_pop[m], fishpop, harbour_seals_infection_type,harbour_infection_odds_basic,harbour_infection_odds_old,harbour_infection_odds_young)
       #this makes the seal poop and spread it to fish
-      seal_function.poop(elephant_seals_pop[m], fishpop)
       seal_function.poop(harbour_seal_pop[m], fishpop)
+      seal_function.poop(elephant_seals_pop[m], fishpop)
       #this adds a year to every seal and kills off the older seals
       elephant_seals_pop[m].age += 1
       harbour_seal_pop[m].age += 1
@@ -262,8 +244,8 @@ if combined_model == True:
     combined_model_fish.append(fish.print_infected_fish(fishpop))
     
     #increases oto length
-    seal_function.increase_oto_length(elephant_seals_pop,elephant_seals_antibodies,elephant_seals_cumulative,elephant_seal_immunity_decrease,elephant_seal_initial_immunity)
-    seal_function.increase_oto_length(harbour_seal_pop,'initial',0,0,0)
+    seal_function.increase_oto_length(elephant_seals_pop,"initial",0,0,1)
+    seal_function.increase_oto_length(harbour_seal_pop,"initial",0,0,1)
   
       #this replaces any dead seals due to age or disease
     seal_function.replace_seal_pop(elephant_seals_pop, seal_pop_number)
@@ -277,22 +259,32 @@ number_of_cycles = []
 for x in range(len_mod):
   number_of_cycles.append(x)
 
-
-data = {
-  'total infected elephant seals': infected_elephant_seals,
-  'total infected harbour seals': infected_harbour_seals,
-  'infected young elephant seals': infected_younger_elephant_seals,
-  'infected young harbour seals': infected_younger_harbour_seals,
-  'infected old elephant seals': infected_older_elephant_seals,
-  'infected old harbour seals': infected_older_harbour_seals,
-  'total antibodies in elephant seals': total_antibodies_elephant_seals,
-  'young elephant seals with antibodies': younger_antibodies_elephant_seals,
-  'old elephant seals with antibodies': older_antibodies_elephant_seals,
-  'total antibodues in harbour seals': total_antibodies_harbour_seals,
-  'young elephant seals with antibodies':younger_antibodies_harbour_seals,
-  'old elephant seals with antibodies':older_antibodies_harbour_seals,
-  'infected seals in harbour seal model': harbour_seals_fish,
-  'infected seals in elephant seal model':elephant_seals_fish,
+if elephant_seal_model == True:
+  data = {
+    'total infected elephant seals': infected_elephant_seals,
+    'infected young elephant seals': infected_younger_elephant_seals,
+    'infected old elephant seals': infected_older_elephant_seals,
+    'total antibodies in elephant seals': total_antibodies_elephant_seals,
+    'young elephant seals with antibodies': younger_antibodies_elephant_seals,
+    'infected fish in elephant seal model':elephant_seals_fish,
+  }
+  data = pd.DataFrame.from_dict(data)
+  data.to_csv(csv_path + "/elephant_seal_df") 
+if harbour_seal_model == True:
+  data = {
+    'total infected harbour seals': infected_harbour_seals,
+    'infected young harbour seals': infected_younger_harbour_seals,
+    'infected old harbour seals': infected_older_harbour_seals,
+    'old elephant seals with antibodies': older_antibodies_elephant_seals,
+    'total antibodues in harbour seals': total_antibodies_harbour_seals,
+    'young harbour seals with antibodies':younger_antibodies_harbour_seals,
+    'old harbour seals with antibodies':older_antibodies_harbour_seals,
+    'infected fish in harbour seal model': harbour_seals_fish,
+  }
+  data = pd.DataFrame.from_dict(data)
+  data.to_csv(csv_path + "/northern_harbour_seal_df") 
+if combined_model == True:
+  data = {
   'total infected elephant seals combined model':infected_elephant_seals_comb_mod,
   'total infected harbour seals combined model': infected_harbour_seals_comb_mod,
   'infected young elephant seals combined model': infected_younger_elephant_seals_comb_mod,
@@ -307,8 +299,8 @@ data = {
   'old harbour seals with antibodies combined model': older_antibodies_harbour_seals_comb_mod,
   'combined model infect fish':combined_model_fish
 }
-data = pd.DataFrame.from_dict(data)
-dataFrame.to_csv(csv_path)
+  data = pd.DataFrame.from_dict(data)
+  data.to_csv(csv_path + "/combined_model_df") 
 
 
 if elephant_seal_model == True:
@@ -337,6 +329,5 @@ if combined_model == True:
   if infected_older_seals == True:
     plt.plot(number_of_cycles, infected_older_harbour_seals_comb_mod)
     plt.plot(number_of_cycles, infected_older_elephant_seals_comb_mod)
-
 
 plt.show()
