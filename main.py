@@ -181,9 +181,10 @@ if combined_model == True:
   #combined model
   for x in range(0,len_mod):
     #this for loop is meant to make every instance undergo the code they need to
-    for m in range(0,len(harbour_seal_pop)-1):
+    for m in range(0,len(elephant_seals_pop)-1):
       #this gets the seal to eat 10 fish and catch oto if they have to
       seal_function.hunt(elephant_seals_pop[m], fishpop, elephant_seals_infection_type,elephant_infection_odds_basic,elephant_infection_odds_old,elephant_infection_odds_young)
+
       seal_function.hunt(harbour_seal_pop[m], fishpop, harbour_seals_infection_type,harbour_infection_odds_basic,harbour_infection_odds_old,harbour_infection_odds_young)
       #this makes the seal poop and spread it to fish
       seal_function.poop(harbour_seal_pop[m], fishpop)
@@ -215,14 +216,16 @@ if combined_model == True:
     him = seal_function.print_infected_seal(elephant_seals_pop)
     hik = seal_function.print_infected_young_seals(elephant_seals_pop, young_param)
     hio = seal_function.print_infected_old_seals(elephant_seals_pop, old_param)
+
+    print(hi)
     
     #compiles the data
-    infected_elephant_seals_comb_mod.append(hi)
-    infected_harbour_seals_comb_mod.append(hit)
-    infected_younger_elephant_seals_comb_mod.append(hil)
-    infected_younger_harbour_seals_comb_mod.append(him)
-    infected_older_elephant_seals_comb_mod.append(hik)
-    infected_older_harbour_seals_comb_mod.append(hio)
+    infected_elephant_seals_comb_mod.append(him)
+    infected_harbour_seals_comb_mod.append(hi)
+    infected_younger_elephant_seals_comb_mod.append(hik)
+    infected_younger_harbour_seals_comb_mod.append(hit)
+    infected_older_elephant_seals_comb_mod.append(hio)
+    infected_older_harbour_seals_comb_mod.append(hil)
 
     #antibodies
     antibodies = seal_function.print_antibody_seals(elephant_seals_pop, [0,11])
