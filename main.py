@@ -7,59 +7,58 @@ import pandas as pd
 seal_pop_number = 100
 fish_pop_number = seal_pop_number * 100
 
-#parameters for the disease 
+#parameters for the disease
 #antibodies parameters ('initial' or 'cumulative')
 elephant_seals_antibodies = 'initial'
 #amount of immunity that is added (put 0 if it's not applicable)
-elephant_seals_cumulative = 0
+elephant_seals_cumulative = 0.1
 #basic(non age based) or nonbasic infected
 elephant_seals_infection_type = 'basic'
 #benchmark for elephant seals infection odds
 elephant_infection_odds_basic = 0.1
 #infection rate for older seals
-elephant_infection_odds_old = 0.5
+elephant_infection_odds_old = 0.01
 #infection rate for younger seals
-elephant_infection_odds_young = 0.5
+elephant_infection_odds_young = 0.1
 #amount the immunity decreases by
-elephant_seal_immunity_decrease = 0
+elephant_seal_immunity_decrease = 0.2
 #the amount of immunity the seal starts with
 elephant_seal_initial_immunity = 1
 
-#parameters for the disease 
+#parameters for the disease
 #antibodies parameters ('initial' or 'cumulative')
 harbour_seals_antibodies = 'initial'
 #amount of immunity that is added (put 0 if it's not applicable)
-harbour_seals_cumulative = 0
+harbour_seals_cumulative = 0.1
 #basic(non age based) or nonbasic infected
 harbour_seals_infection_type = 'basic'
 #benchmark for elephant seals infection odds
 harbour_infection_odds_basic = 0.1
 #infection rate for older seals
-harbour_infection_odds_old = 0.5
+harbour_infection_odds_old = 0.1
 #infection rate for younger seals
 harbour_infection_odds_young = 0.5
 #amount the immunity decreases by
 harbour_seal_immunity_decrease = 0
 #the amount of immunity the seal starts with
-harbour_seal_initial_immunity = 1
-
-#age gap of young seals
-young_param = [0, 3]
-#age gap of old seals
+harbour_seal_initial_immunity = 0
+#age gap of young seals inclusive for each number
+young_param = [0, 2]
+#age gap of old seals inclusive for each number
 old_param = [8, 10]
 
 #length of model
 len_mod = 100
 
 # which models you want to run
-elephant_seal_model = False
-harbour_seal_model = False
-combined_model = True
+elephant_seal_model = True
+harbour_seal_model = True
+combined_model = False
 
 #what info you want to print/graph
-infected_seals = True
+infected_seals = False
 infected_younger_seals = False
-infected_older_seals = False
+infected_older_seals = True
 
 #insert csv path here
 csv_path = ""
@@ -118,7 +117,7 @@ if elephant_seal_model == True:
     infected_younger_elephant_seals.append(hi)
     hi = seal_function.print_infected_old_seals(elephant_seals_pop, old_param)
     infected_older_elephant_seals.append(hi)
-    antibodies = seal_function.print_antibody_seals(elephant_seals_pop, [0,11])
+    antibodies = seal_function.print_antibody_seals(elephant_seals_pop, old_param)
     total_antibodies_elephant_seals.append(antibodies)
     antibodies = seal_function.print_antibody_seals(elephant_seals_pop, young_param)
     younger_antibodies_elephant_seals.append(antibodies)
@@ -216,8 +215,6 @@ if combined_model == True:
     him = seal_function.print_infected_seal(elephant_seals_pop)
     hik = seal_function.print_infected_young_seals(elephant_seals_pop, young_param)
     hio = seal_function.print_infected_old_seals(elephant_seals_pop, old_param)
-
-    print(hi)
     
     #compiles the data
     infected_elephant_seals_comb_mod.append(him)
@@ -270,7 +267,7 @@ if elephant_seal_model == True:
     'infected fish in elephant seal model':elephant_seals_fish,
   }
   data = pd.DataFrame.from_dict(data)
-  data.to_csv(csv_path + "/elephant_seal_df") 
+  #data.to_csv(csv_path + "/elephant_seal_df") 
 if harbour_seal_model == True:
   data = {
     'total infected harbour seals': infected_harbour_seals,
@@ -283,7 +280,8 @@ if harbour_seal_model == True:
     'infected fish in harbour seal model': harbour_seals_fish,
   }
   data = pd.DataFrame.from_dict(data)
-  data.to_csv(csv_path + "/northern_harbour_seal_df") 
+  #data.to_csv(csv_path + "/northern_harbour_seal_df") 
+
 if combined_model == True:
   data = {
   'total infected elephant seals combined model':infected_elephant_seals_comb_mod,
@@ -301,9 +299,10 @@ if combined_model == True:
   'combined model infect fish':combined_model_fish
 }
   data = pd.DataFrame.from_dict(data)
-  print(data['young elephant seals with antibodies combined model'])
-  print(data['young harbour seals with antibodies combined model'])  
-  data.to_csv(csv_path + "/combined_model_df") 
+  print(data['infected young harbour seals combined model'])
+  print(data['young harbour seals with antibodies combined model'])
+
+  data.to_csv(csv_path + "/combined_model_df.csv") 
 
 
 if elephant_seal_model == True:
