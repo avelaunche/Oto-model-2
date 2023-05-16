@@ -299,8 +299,6 @@ if combined_model == True:
   'combined model infect fish':combined_model_fish
 }
   data = pd.DataFrame.from_dict(data)
-  print(data['infected young harbour seals combined model'])
-  print(data['young harbour seals with antibodies combined model'])
 
   data.to_csv(csv_path + "/combined_model_df.csv") 
 
