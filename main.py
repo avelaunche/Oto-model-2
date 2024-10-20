@@ -23,7 +23,7 @@ elephant_infection_odds_young = 0.1
 #amount the immunity decreases by
 elephant_seal_immunity_decrease = 0.2
 #the amount of immunity the seal starts with
-elephant_seal_initial_immunity = 1
+elephant_seal_initial_immunity = 0.9
 
 #parameters for the disease
 #antibodies parameters ('initial' or 'cumulative')
