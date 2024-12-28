@@ -1,118 +1,199 @@
 import random
-#This establishes the class and the attribtues for 
+
+# -------------------------------
+# CLASS DEFINITION
+# -------------------------------
+
 class elephant_seals:
-  def __init__(self, age, oto_infection, location):
-    self.age = age
-    self.oto_infection = oto_infection
-    self.location = location
-    self.oto_length = 0
-    self.antibodies = 0
-#This is the amount of cycles that oto persists for
+    """
+    Represents an elephant seal with attributes for age, infection status,
+    location, infection duration, and antibody levels.
+    """
+    def __init__(self, age, oto_infection, location):
+        self.age = age  # Age of the seal (in arbitrary units, e.g., years)
+        self.oto_infection = oto_infection  # Infection status (1 = infected, 0 = not infected)
+        self.location = location  # Current location (index representing a fish population location)
+        self.oto_length = 0  # Duration (cycles) of ongoing infection
+        self.antibodies = 0  # Antibody level for immunity against infection
+
+
+# -------------------------------
+# GLOBAL VARIABLES
+# -------------------------------
+
+# Duration (in cycles) that Otostrongylus circumlitis infection persists in a seal
 length_of_oto_in_seal = 1
-#The is the chance of oto infection for a fish that eats oto poop
+
+# Probability of infection for fish exposed to infected seal feces
 oto_infection_chance = 0.25
 
-#Code for generating seal population
+
+# -------------------------------
+# POPULATION GENERATION
+# -------------------------------
+
 def seals_generate(number):
-  newpop = []
-  for x in range(0,number):
-    newpop.append(elephant_seals(random.randint(0,10),0,random.randint(0,99)))
-  return newpop
-#Code for how seals hunt
-def hunt(seal, fishpop, calc_oto_infection, oddsoverallofsealsgettingoto,oddsofoldsealgettingoto,oddsofyoungsealgettingoto):
-  for x in range(0,10):
-    #changed the location
-    seal.location = random.randint(0,len(fishpop)-1)
-    #pulls up available fish at that location
-    preypop = fishpop[seal.location]
-    #calculate which fish ends up as prey
-    prey = preypop[random.randint(0,len(preypop)-1)]
-    if calc_oto_infection == 'basic':
-      calc_oto_infection_basic(prey, seal,oddsoverallofsealsgettingoto)
-    else:
-      calc_oto_infection_age(prey, seal,oddsofyoungsealgettingoto,oddsofoldsealgettingoto)
-    fishpop[seal.location].remove(prey)
-#This calculates if a seal gets oto or not because of the fish they eat. This one has no factors.
-def calc_oto_infection_basic(prey, seal,oddsoverallofsealsgettingoto):
-  if prey.oto_infection == 1 and random.random() < oddsoverallofsealsgettingoto and seal.antibodies < random.random():
-    seal.oto_infection = 1
-    seal.oto_length = 1
-#This calculates if a seal gets oto or not because of the fish they eat. This one has an age factor.
-def calc_oto_infection_age(prey,seal,oddsofyoungsealgettingoto,oddsofoldsealgettingoto):              
-  if seal.age <= 3 and random.random() < oddsofyoungsealgettingoto and seal.antibodies == 0:
-    seal.oto_infection = 1
-    seal.oto_length = 1
-  elif seal.age >= 4 and random.random() < oddsofoldsealgettingoto and seal.antibodies == 0:
-    seal.oto_infection = 1
-    seal.oto_length = 1
+    """
+    Generates a population of seals with random ages and locations.
+    
+    Args:
+        number (int): Number of seals to generate.
+    
+    Returns:
+        list: List of elephant_seals objects.
+    """
+    newpop = []
+    for x in range(0, number):
+        newpop.append(elephant_seals(random.randint(0, 10), 0, random.randint(0, 99)))
+    return newpop
 
-#This increases everything about the oto infection. It increases antibodies, it gives antibodies, does everything
-def increase_oto_length(sealpop,antibodies,cumulative_immunity_addon_amount, immunity_decrease,initial_immunity):
-  for x in sealpop:
-    if random.random() < 0.02:
-      sealpop.remove(x)
-    if x.oto_length > 0:
-      x.oto_length += 1
-      if x.oto_length > length_of_oto_in_seal and x.antibodies < 1:
-        x.oto_length = 0
-        x.oto_infection = 0
-        #this codes for the initial immunity after infection
-        if antibodies == 'initial':
-          x.antibodies = initial_immunity
 
+# -------------------------------
+# SEAL HUNTING BEHAVIOR
+# -------------------------------
+
+def hunt(seal, fishpop, calc_oto_infection, oddsoverallofsealsgettingoto,
+         oddsofoldsealgettingoto, oddsofyoungsealgettingoto):
+    """
+    Simulates a seal's hunting behavior and potential infection from prey.
+    
+    Args:
+        seal (elephant_seals): The seal object performing hunting.
+        fishpop (list): A list of fish populations by location.
+        calc_oto_infection (str): Method for calculating infection ('basic' or 'age').
+        oddsoverallofsealsgettingoto (float): Base infection chance.
+        oddsofoldsealgettingoto (float): Infection chance for older seals.
+        oddsofyoungsealgettingoto (float): Infection chance for younger seals.
+    """
+    for x in range(0, 10):
+        # Seal moves to a random fish population location
+        seal.location = random.randint(0, len(fishpop) - 1)
+        
+        # Select prey from the fish population at the current location
+        preypop = fishpop[seal.location]
+        prey = preypop[random.randint(0, len(preypop) - 1)]
+        
+        # Calculate infection based on the chosen method
+        if calc_oto_infection == 'basic':
+            calc_oto_infection_basic(prey, seal, oddsoverallofsealsgettingoto)
         else:
-          x.antibodies += cumulative_immunity_addon_amount
-    #this decreases antibodies
-    decrease_antibody(x,immunity_decrease)
+            calc_oto_infection_age(prey, seal, oddsofyoungsealgettingoto, oddsofoldsealgettingoto)
+        
+        # Remove prey from the fish population after being eaten
+        fishpop[seal.location].remove(prey)
 
-#The next few variables print the numbers of what they describe
+
+def calc_oto_infection_basic(prey, seal, oddsoverallofsealsgettingoto):
+    """
+    Basic infection calculation without considering seal age.
+    
+    Args:
+        prey (object): The prey fish object.
+        seal (elephant_seals): The seal object.
+        oddsoverallofsealsgettingoto (float): Probability of infection.
+    """
+    if prey.oto_infection == 1 and random.random() < oddsoverallofsealsgettingoto and seal.antibodies < random.random():
+        seal.oto_infection = 1
+        seal.oto_length = 1
+
+
+def calc_oto_infection_age(prey, seal, oddsofyoungsealgettingoto, oddsofoldsealgettingoto):
+    """
+    Infection calculation considering seal's age.
+    
+    Args:
+        prey (object): The prey fish object.
+        seal (elephant_seals): The seal object.
+        oddsofyoungsealgettingoto (float): Infection chance for younger seals.
+        oddsofoldsealgettingoto (float): Infection chance for older seals.
+    """
+    if seal.age <= 3 and random.random() < oddsofyoungsealgettingoto and seal.antibodies == 0:
+        seal.oto_infection = 1
+        seal.oto_length = 1
+    elif seal.age >= 4 and random.random() < oddsofoldsealgettingoto and seal.antibodies == 0:
+        seal.oto_infection = 1
+        seal.oto_length = 1
+
+
+# -------------------------------
+# INFECTION DYNAMICS
+# -------------------------------
+
+def increase_oto_length(sealpop, antibodies, cumulative_immunity_addon_amount, immunity_decrease, initial_immunity):
+    """
+    Updates infection duration, clears infection after a threshold, and adjusts antibodies.
+    
+    Args:
+        sealpop (list): List of seal objects.
+        antibodies (str): Antibody adjustment strategy ('initial' or other).
+        cumulative_immunity_addon_amount (float): Amount of immunity added per infection cycle.
+        immunity_decrease (float): Rate of immunity loss.
+        initial_immunity (float): Initial immunity provided after infection.
+    """
+    for x in sealpop:
+        if random.random() < 0.02:
+            sealpop.remove(x)  # Random seal death simulation
+        
+        if x.oto_length > 0:
+            x.oto_length += 1
+            if x.oto_length > length_of_oto_in_seal and x.antibodies < 1:
+                x.oto_length = 0
+                x.oto_infection = 0
+                if antibodies == 'initial':
+                    x.antibodies = initial_immunity
+                else:
+                    x.antibodies += cumulative_immunity_addon_amount
+        
+        decrease_antibody(x, immunity_decrease)
+
+
+# -------------------------------
+# DATA REPORTING FUNCTIONS
+# -------------------------------
+
 def print_infected_seal(sealpop):
-  number_of_infected = 0
-  for x in sealpop:
-    if x.oto_infection == 1:
-      number_of_infected += 1
+    """Returns the number of infected seals."""
+    return sum(1 for x in sealpop if x.oto_infection == 1)
 
-  return number_of_infected
 
 def print_infected_young_seals(sealpop, young_param):
-  number_of_infected = 0
-  for x in sealpop:
-    if x.oto_infection == 1 and x.age < young_param[1] and x.age > young_param[0]:
-      number_of_infected += 1
-  return number_of_infected
+    """Returns the number of infected young seals within the given age range."""
+    return sum(1 for x in sealpop if x.oto_infection == 1 and young_param[0] < x.age < young_param[1])
+
 
 def print_infected_old_seals(sealpop, old_param):
-  number_of_infected = 0
-  for x in sealpop:
-    if x.oto_infection == 1 and x.age > old_param[0] and x.age < old_param[1]:
-      number_of_infected += 1
-  return number_of_infected
+    """Returns the number of infected old seals within the given age range."""
+    return sum(1 for x in sealpop if x.oto_infection == 1 and old_param[0] < x.age < old_param[1])
 
-#This replaces dead seals
+
+# -------------------------------
+# POPULATION MAINTENANCE
+# -------------------------------
+
 def replace_seal_pop(sealpop, sealnumber):
-  while len(sealpop) < sealnumber:
-    sealpop.append(elephant_seals(0,0, random.randint(0,99)))
+    """Replenishes the seal population if below the desired number."""
+    while len(sealpop) < sealnumber:
+        sealpop.append(elephant_seals(0, 0, random.randint(0, 99)))
 
-#This is how seals poop
+
 def poop(seal, fishpop):
-  for x in range(0,2):
-    if seal.oto_infection == 1:
-      seal.location = random.randint(0,len(fishpop)-1)
-      random.shuffle(fishpop[seal.location])
-      for x in fishpop[seal.location]:
-        if random.random() < oto_infection_chance:
-          x.oto_infection = 1
+    """Simulates seal feces spreading infection to fish."""
+    for _ in range(2):
+        if seal.oto_infection == 1:
+            seal.location = random.randint(0, len(fishpop) - 1)
+            random.shuffle(fishpop[seal.location])
+            for x in fishpop[seal.location]:
+                if random.random() < oto_infection_chance:
+                    x.oto_infection = 1
 
-#This decreases antibodies accordint to the immunity_decrease_amounts
-def decrease_antibody(seal,immunity_decrease_amounts):
-  if seal.antibodies > 0:
-    seal.antibodies -= immunity_decrease_amounts
-  return seal
 
-#this returns a variable for number of seals with antibodies in the age_param range, including partials
+def decrease_antibody(seal, immunity_decrease_amounts):
+    """Reduces antibody levels in a seal."""
+    if seal.antibodies > 0:
+        seal.antibodies -= immunity_decrease_amounts
+    return seal
+
+
 def print_antibody_seals(seal_pop, age_param):
-  antibody_count = 0
-  for x in seal_pop:
-    if x.age < age_param[1] and x.age > age_param[0] and x.antibodies > 0:
-      antibody_count += 1
-  return antibody_count
+    """Returns the number of seals with antibodies in the specified age range."""
+    return sum(1 for x in seal_pop if age_param[0] < x.age < age_param[1] and x.antibodies > 0)
